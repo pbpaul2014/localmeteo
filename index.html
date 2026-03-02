@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Météo</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widget Météo avec Géolocalisation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f3f4f6;
+    }
+
+    #weather-widget {
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 300px;
+    }
+
+    #weather-widget h2 {
+      margin: 0;
+      font-size: 24px;
+      color: #333;
+    }
+
+    #location {
+      font-size: 16px;
+      color: #777;
+    }
+
+    #temperature {
+      font-size: 40px;
+      color: #ff6f61;
+    }
+
+    #description {
+      font-size: 18px;
+      color: #666;
+    }
+
+    #loading {
+      font-size: 18px;
+      color: #aaa;
+    }
+  </style>
+</head>
+<body>
+  <div id="weather-widget">
+    <h2>Votre Météo</h2>
+    <div id="loading">Chargement...</div>
+    <div id="location"></div>
+    <div id="temperature"></div>
+    <div id="description"></div>
+  </div>
+
+  <script>
+    // Fonction pour obtenir la géolocalisation
+    function getGeolocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(fetchWeatherData, handleGeolocationError);
+      } else {
+        alert("La géolocalisation n'est pas supportée par votre navigateur.");
+      }
+    }
+
+    // Fonction pour récupérer les données météo de l'API
+    function fetchWeatherData(position) {
+      const latitude = position.coords.latitude;
+      const longitude = position.coords.longitude;
+      
+      // Remplacer par votre clé API d'OpenWeatherMap
+      const apiKey = 'c37d39519b108c06bc382e74028c7113';
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${latitude}&lon=${longitude}&appid=${apiKey}&units=metric&lang=fr`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => updateWeatherWidget(data))
+        .catch(error => {
+          document.getElementById('loading').textContent = "Erreur de chargement des données.";
+          console.error(error);
+        });
+    }
+
+    // Mise à jour du widget avec les données récupérées
+    function updateWeatherWidget(data) {
+      const location = document.getElementById('location');
+      const temperature = document.getElementById('temperature');
+      const description = document.getElementById('description');
+      const loading = document.getElementById('loading');
+      
+      loading.style.display = 'none';  // Cacher le message de chargement
+
+      location.textContent = `${data.name}, ${data.sys.country}`;
+      temperature.textContent = `${Math.round(data.main.temp)}°C`;
+      description.textContent = data.weather[0].description.charAt(0).toUpperCase() + data.weather[0].description.slice(1);
+    }
+
+    // Si la géolocalisation échoue
+    function handleGeolocationError(error) {
+      document.getElementById('loading').textContent = "Erreur de géolocalisation.";
+      console.error(error);
+    }
+
+    // Lancer la géolocalisation dès le chargement de la page
+    window.onload = getGeolocation;
+  </script>
+</body>
+</html>
+</body>
+</html>
